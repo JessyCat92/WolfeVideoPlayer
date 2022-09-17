@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c333ccfdd0cbdbc4ca30cef2dd6e6b9b, type: 3}
   m_Name: WolfePlayerController
   m_EditorClassIdentifier: 
-  serializedUdonProgramAsset: {fileID: 11400000, guid: 10f05932bf2f40d4c953d400299adb7b,
+  serializedUdonProgramAsset: {fileID: 11400000, guid: 8e1668193ab539a4385058e55a342282,
     type: 2}
   udonAssembly: 
   assemblyError: 
