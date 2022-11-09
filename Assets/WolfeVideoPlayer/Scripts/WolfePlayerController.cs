@@ -99,7 +99,13 @@ public class WolfePlayerController : UdonSharpBehaviour
     /// </summary>
     private bool videoPlayerLoading = true;
 
-    
+
+    /// <summary>
+    /// Was Init function executed? Without player will not work correctly
+    /// </summary>
+    private bool isInit = false;
+
+
 
     /* ---------------------------------------------------------------------------------------------- */
     /* -----------------------------------------Function Hooks--------------------------------------- */
@@ -251,6 +257,7 @@ public class WolfePlayerController : UdonSharpBehaviour
     {
         set
         {
+            Init();
             videoPlayerLoading = true;
             _syncedUrl = value;
             SyncedUrlHook(_syncedUrl);
@@ -271,6 +278,7 @@ public class WolfePlayerController : UdonSharpBehaviour
     {
         set
         {
+            Init();
             _isPlaying = value;
             IsPlayingHook(_isPlaying);
             SyncVideoPlaying();
@@ -289,6 +297,7 @@ public class WolfePlayerController : UdonSharpBehaviour
     {
         set
         {
+            Init();
             _masterLocked = value;
             MasterLockedHook(_masterLocked);
             SetControlsLock();
@@ -303,6 +312,7 @@ public class WolfePlayerController : UdonSharpBehaviour
     {
         set
         {
+            Init();
             _videoTime = value;
             VideoTimeHook(_videoTime);
             if (!Networking.IsOwner(gameObject))
@@ -575,7 +585,7 @@ public class WolfePlayerController : UdonSharpBehaviour
         videoPlayerLoading = false;
         livestream = false;
         SetCurrentVideo();
-        if (float.IsInfinity(videoPlayer.GetDuration()))
+        if (float.IsInfinity(videoPlayer.GetDuration()) || SyncedUrlProperty.ToString().StartsWith("rtsp"))
         {
             livestream = true;
         }
@@ -816,11 +826,19 @@ public class WolfePlayerController : UdonSharpBehaviour
 
     void Start()
     {
+        Init();
+    }
+
+    void Init()
+    {
+        if (isInit) return;
+        isInit = true;
+
         //Start the VideoPlayerHeartbeat() function.
         SendCustomEventDelayedSeconds(nameof(VideoPlayerHeartbeat), videoPlayerHeartbeat);
 
         //Set the WolfePlayerPanel Controller variables
-        foreach(WolfePlayerPanel wolfePlayerPanel in wolfePlayerPanels)
+        foreach (WolfePlayerPanel wolfePlayerPanel in wolfePlayerPanels)
         {
             if (wolfePlayerPanel != null)
             {
@@ -837,7 +855,7 @@ public class WolfePlayerController : UdonSharpBehaviour
             OnOwnershipTransferred(Networking.GetOwner(gameObject));
         }
 
-        if(wolfeHooks != null)
+        if (wolfeHooks != null)
         {
             wolfeHooks.SetWolfePlayerController(this);
         }
